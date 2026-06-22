@@ -39,7 +39,7 @@ Plus HRI-specific design patterns for: adaptive/variable autonomy, LLM-based HRI
 ### Option B — Clone the repo
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/hri-research-skill.git
+git clone https://github.com/yanranjiang/hri-research-skill.git
 mkdir -p ~/.claude/skills/hri-research
 cp hri-research-skill/SKILL.md ~/.claude/skills/hri-research/SKILL.md
 ```
