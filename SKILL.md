@@ -1,10 +1,22 @@
 ---
 name: hri-research
-description: Comprehensive guide for designing and conducting Human-Robot Interaction (HRI) studies. Covers the full research lifecycle from question formulation to dissemination, including multimodal data fusion, advanced statistical testing (LMM, mediation, Bayesian), and inter-rater reliability. Based on Tian et al. (2024) CRC Press. Use for study design, participant protocols, metric selection, ethics, multimodal analysis, and statistical testing in HRI.
-version: 1.1.0
+description: >
+  Comprehensive guide for designing and conducting Human-Robot Interaction (HRI) studies.
+  In AUTO-DESIGN MODE (default for new studies): autonomously generates a complete study
+  protocol workspace — research-question.md, study-design.md, power-analysis.py,
+  instruments.md, analysis-plan.md, ethics-checklist.md, session-script.md —
+  from a research scenario description, then compiles study-protocol.md and
+  progress-report.html for human review. In ADVISORY MODE: covers the full study lifecycle
+  from question formulation to dissemination, including multimodal data fusion,
+  advanced statistical testing (LMM, mediation, Bayesian), and inter-rater reliability.
+  Based on Tian et al. (2024) CRC Press.
+version: 2.0.0
 author: Orchestra Research
 license: MIT
-tags: [HRI, Human-Robot Interaction, Study Design, Experimental Methodology, Ethics, Robotics Research, Adaptive Autonomy, Multimodal Fusion, Statistical Testing, Mixed Effects, Mediation, Bayesian]
+tags: [HRI, Human-Robot Interaction, Autonomous Protocol Generation, Auto-Design,
+       Study Design, Experimental Methodology, Ethics, Robotics Research,
+       Adaptive Autonomy, Multimodal Fusion, Statistical Testing, Mixed Effects,
+       Mediation, Bayesian, File Generation, Agent Continuity]
 dependencies: []
 ---
 
@@ -34,6 +46,179 @@ A structured guide for designing rigorous, human-centred, and ethical HRI studie
 - You need ML/training guidance for robot systems (use `trl-fine-tuning`, `peft`, etc.)
 - You need paper writing structure (use `ml-paper-writing` or `systems-paper-writing`)
 - You need research ideation (use `brainstorming-research-ideas` or `creative-thinking-for-research`)
+
+---
+
+## Auto-Design Mode: Autonomous Protocol Generation
+
+**This is the default mode when a user describes a new HRI study.** Don't just advise — autonomously generate a complete set of study files they can use immediately.
+
+**Run autonomously. Do not pause for confirmation at each stage — work through all stages, then surface a `progress-report.html` the user can review and redirect.**
+
+### Getting Started
+
+Determine user state and act immediately:
+
+| User State | Action |
+|---|---|
+| Vague idea ("I want to study X") | Apply PICO to clarify (ask ≤ 2 questions max), then start |
+| Clear research question | Start immediately — no clarifying questions |
+| Existing design to review | Read their materials, identify gaps, generate missing files |
+| Resuming (`study-state.yaml` exists) | Read state, continue from last incomplete stage |
+
+### Workspace Structure
+
+Create at the project root before writing any content:
+
+```
+{study-slug}/                      # e.g. shared-autonomy-mining/
+├── study-state.yaml               # Stage tracking — update after each stage
+├── research-question.md           # PICO framework, refined RQ, hypotheses
+├── study-design.md                # Design type, conditions, counterbalancing
+├── power-analysis.py              # Runnable Python — computes N + attrition buffer
+├── instruments.md                 # Validated questionnaires + admin schedule
+├── analysis-plan.md               # Statistical tests, effect sizes, corrections
+├── ethics-checklist.md            # HREC/IRB requirements + HRI risk mitigations
+├── data-collection/
+│   ├── session-script.md          # Minute-by-minute experimenter guide
+│   └── debrief.md                 # Participant debrief text
+└── study-protocol.md              # Full compiled protocol (generated last)
+```
+
+Name the folder from the topic: `trust-calibration-spot/`, `llm-intent-hri/`, `ag-robot-shared-autonomy/`.
+
+### Generation Pipeline
+
+Work through each stage in order. Write the file, update `study-state.yaml` to `complete`, then move to the next — **no stopping between stages**.
+
+```
+Stage 1: Research Question
+  Apply PICO → refine RQ → form 2–3 testable hypotheses
+  → write research-question.md
+
+Stage 2: Study Design
+  Choose within/between/mixed design (justify) → counterbalancing strategy
+  → write study-design.md
+
+Stage 3: Power Analysis
+  Justify assumed effect size from prior HRI literature → compute N → add 20% attrition buffer
+  → write power-analysis.py (runnable, with printed output)
+
+Stage 4: Instruments & Measures
+  Map each DV to a validated, cited instrument → admin schedule per session
+  → write instruments.md
+
+Stage 5: Statistical Analysis Plan
+  Select primary + secondary tests → effect size metrics → multiple comparison correction
+  → write analysis-plan.md with Python code snippets
+
+Stage 6: Ethics Checklist
+  HREC/IRB requirements → HRI-specific risks (robot proximity, video recording, WoZ)
+  → write ethics-checklist.md
+
+Stage 7: Session Script
+  Minute-by-minute experimenter guide → debrief text
+  → write data-collection/session-script.md and data-collection/debrief.md
+
+Stage 8: Compile + Confound Review
+  Merge all stages → write study-protocol.md
+  Check top confound risks (see pitfalls table) → add flags to study-state.yaml
+  → generate progress-report.html
+```
+
+### `study-state.yaml` Template
+
+```yaml
+study:
+  title: ""
+  scenario: ""
+  created: ""          # ISO date
+  last_updated: ""
+
+stages:
+  research_question: pending   # pending | complete
+  study_design: pending
+  power_analysis: pending
+  instruments: pending
+  analysis_plan: pending
+  ethics_checklist: pending
+  session_script: pending
+  protocol_compiled: pending
+
+design:
+  type: ""             # within | between | mixed | longitudinal
+  n_conditions: 0
+  target_n: 0
+  primary_dv: ""
+  primary_test: ""
+
+flags: []              # open questions or confound risks for human review
+```
+
+### Progress Report
+
+After Stage 8, generate `progress-report.html`. This is what the user sees to review and redirect your work.
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+<title>HRI Study Design — Progress Report</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; color: #333; line-height: 1.6; }
+  h1   { color: #1a237e; border-bottom: 2px solid #e8eaf6; padding-bottom: 0.5rem; }
+  h2   { color: #283593; margin-top: 2rem; }
+  .done    { color: #2e7d32; font-weight: 600; }
+  .pending { color: #bf360c; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+  th { background: #e8eaf6; font-weight: 600; }
+  .risk { background: #fff8e1; border-left: 4px solid #f9a825; padding: 0.8rem 1rem; margin: 0.5rem 0; border-radius: 0 4px 4px 0; }
+  .flag { background: #fce4ec; border-left: 4px solid #c62828; padding: 0.8rem 1rem; margin: 0.5rem 0; border-radius: 0 4px 4px 0; }
+  footer { font-size: 0.85rem; color: #90a4ae; margin-top: 3rem; border-top: 1px solid #eceff1; padding-top: 1rem; }
+</style>
+</head>
+<body>
+  <h1>🤖 HRI Study Design — Progress Report</h1>
+  <p><strong>Study:</strong> {title} &nbsp;|&nbsp; <strong>Generated:</strong> {date}</p>
+
+  <h2>Stage Completion</h2>
+  <table>
+    <tr><th>Stage</th><th>File</th><th>Status</th></tr>
+    <!-- one row per stage with class="done" or class="pending" -->
+  </table>
+
+  <h2>Key Design Decisions</h2>
+  <table>
+    <tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr>
+    <!-- design type, N, primary DV, primary test, counterbalancing strategy -->
+  </table>
+
+  <h2>Top Confound Risks</h2>
+  <!-- 3 most relevant risks from the pitfalls table, with specific mitigations -->
+
+  <h2>Open Questions for Human Review</h2>
+  <!-- items from study-state.yaml flags — decisions that need the researcher's input -->
+
+  <h2>Files Generated</h2>
+  <ul><!-- list all files with one-line description --></ul>
+
+  <footer>Generated by /hri-research v2.0 · Methodology: Tian et al. (2024) <em>Experimental Methodology for Human-Robot Interaction</em>, CRC Press</footer>
+</body>
+</html>
+```
+
+### Agent Continuity
+
+For study designs that span multiple conversation turns, set up `/loop` so the agent continues autonomously across context windows:
+
+```
+/loop
+Continue the HRI study design. Read study-state.yaml to find the current stage.
+Complete it, write the output file, mark the stage "complete" in study-state.yaml,
+then move to the next pending stage. Stop when all stages are complete and
+progress-report.html is generated.
+```
 
 ---
 
@@ -1262,19 +1447,32 @@ When using simulated users (agent or human proxy) to test robot systems:
 
 ## Usage Instructions for Agents
 
-When a researcher asks for HRI study design or analysis help:
+### Choosing a Mode
+
+| Situation | Mode | What to do |
+|---|---|---|
+| User describes a new study or research scenario | **Auto-Design** | Create workspace, run generation pipeline, output `progress-report.html` |
+| User asks a specific methodology question | **Advisory** | Answer using the relevant lifecycle stage below |
+| User shares data for analysis | **Advisory** | Apply Stage 6.5 (fusion) and Stage 7 (statistics) guidance |
+| User is writing up a paper | **Advisory** | Apply Stage 8 reporting checklists |
+
+**Default to Auto-Design mode.** If in doubt, create the workspace and start generating — it is always easier for the user to redirect than to pull methodology knowledge from a conversation.
+
+### Advisory Mode Checklist
+
+When answering specific methodology questions:
 
 1. **Identify the lifecycle stage**: which stage are they at? Tailor advice accordingly.
-2. **Clarify the RQ**: if vague, apply the PICO framework to sharpen it.
-3. **Recommend design**: ask about population, platform, and session constraints before recommending between/within-subjects.
-4. **Select measures**: match measures to constructs; always cite validated instruments; caution against over-instrumenting.
-5. **Flag ethics gate**: remind the researcher that ethics approval is required before participant contact.
-6. **Power analysis**: run or recommend a power analysis before recruitment begins.
-7. **Anticipate confounds**: identify the top 2–3 confound risks for each design and suggest mitigations.
-8. **Fusion pipeline**: for multimodal studies, walk through Steps 1–5 of Stage 6.5 in order — synchronisation first, convergent validity last.
-9. **Statistical test selection**: use the test selection table in 7.1; default to LMM over RM-ANOVA for any repeated-measures data with potential missing values.
-10. **Mediation vs. moderation**: mediation asks "how/why does X affect Y?"; moderation asks "when/for whom does X affect Y?" — clarify which the RQ implies before running analysis.
-11. **Reporting**: reference both the Stage 7 statistical checklist and the Stage 8 CONSORT-adapted checklist.
+2. **Clarify the RQ**: if vague, apply the PICO framework to sharpen it (≤ 2 clarifying questions).
+3. **Recommend design**: match design type to research question; justify choice; flag carry-over risk.
+4. **Select measures**: map DVs to validated instruments with citations; warn against over-instrumenting (max 3 questionnaires per condition).
+5. **Flag ethics gate**: ethics approval is a hard gate — no participant contact without it.
+6. **Power analysis**: always run before recruitment; use the code templates in Stage 5.
+7. **Anticipate confounds**: identify the top 2–3 risks from the pitfalls table; suggest mitigations.
+8. **Fusion pipeline**: for multimodal studies, walk through Stage 6.5 Steps 1–5 in order — synchronisation first, convergent validity last.
+9. **Statistical test selection**: use the table in §7.1; default to LMM over RM-ANOVA for repeated-measures with any missing data.
+10. **Mediation vs. moderation**: mediation = "how/why does X affect Y?"; moderation = "when/for whom?" — clarify which the RQ implies before running analysis.
+11. **Reporting**: reference both the §7 statistical checklist and the §8 CONSORT-adapted checklist.
 
 **Key principles**:
 - Validity: internal > external for causal claims; external > internal for deployment-oriented studies
